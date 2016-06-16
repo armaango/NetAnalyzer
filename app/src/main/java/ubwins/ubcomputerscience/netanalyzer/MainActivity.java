@@ -1,4 +1,5 @@
-//netanalyzer
+//netanalyzer v1.0
+
 package ubwins.ubcomputerscience.netanalyzer;
 
 import android.support.v7.app.AppCompatActivity;
