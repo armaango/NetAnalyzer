@@ -89,10 +89,10 @@ public class MainActivity extends AppCompatActivity
         String modelMake = getModel();
         String androidVersion = getOS();
 
-        Log.v(TAG,"IMEI " + IMEI);
-        Log.v(TAG,"Service " + service);
-        Log.v(TAG,"Model Make " + modelMake);
-        Log.v(TAG,"Android Version " + androidVersion);
+        //Log.v(TAG,"IMEI " + IMEI);
+        //Log.v(TAG,"Service " + service);
+        //Log.v(TAG,"Model Make " + modelMake);
+        //Log.v(TAG,"Android Version " + androidVersion);
 
         try {
             enableStrictMode();
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity
                     + "=" + URLEncoder.encode(androidVersion, "UTF-8");
 
             // Defined URL  where to send data
-            URL url = new URL("youraddresshere");
+            URL url = new URL("http://mediahackerz.azurewebsites.net/ir/finalproject/FileStore.php");
 
             // Send POST data request
 
@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity
 
 
             text = sb.toString();
+            Log.v(TAG,"Reply from server:");
+            Log.v(TAG,text);
         }
         catch(UnsupportedEncodingException e)
         {
