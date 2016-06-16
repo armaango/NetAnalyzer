@@ -1,4 +1,4 @@
-//netanalyzer v1.0
+//netanalyzer v1.0.0
 
 package ubwins.ubcomputerscience.netanalyzer;
 
