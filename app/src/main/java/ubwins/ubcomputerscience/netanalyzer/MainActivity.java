@@ -1,5 +1,9 @@
 //netanalyzer v1.0
 
+//CONTRIBUTORS
+//agautam2@buffalo.edu, armaango@buffalo.edu
+//UBWiNS@ Computer Science @ State University of New York at Buffalo
+
 package ubwins.ubcomputerscience.netanalyzer;
 
 import android.support.v7.app.AppCompatActivity;
