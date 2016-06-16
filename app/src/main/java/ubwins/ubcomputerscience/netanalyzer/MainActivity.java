@@ -5,7 +5,7 @@
 //UBWiNS@ Computer Science @ State University of New York at Buffalo
 //DESCRIPTION
 //An Android application that lets you monitor interesting cellular network
-//statistics on your Android phone
+//statistics on your Android powered phone
 
 package ubwins.ubcomputerscience.netanalyzer;
 
