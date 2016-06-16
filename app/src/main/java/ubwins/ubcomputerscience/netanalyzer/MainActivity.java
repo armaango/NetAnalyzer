@@ -1,4 +1,4 @@
-//netanalyzer v1.0.0
+//netanalyzer v1.0
 
 //CONTRIBUTORS
 //agautam2@buffalo.edu, armaango@buffalo.edu
