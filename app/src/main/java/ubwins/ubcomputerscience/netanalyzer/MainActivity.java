@@ -7,7 +7,7 @@
 
 //DESCRIPTION
 //An Android application that lets you monitor interesting cellular network
-//statistics on your Android enabled phone
+//statistics on your Android powered phone
 
 package ubwins.ubcomputerscience.netanalyzer;
 
