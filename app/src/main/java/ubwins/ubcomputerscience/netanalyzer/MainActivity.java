@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity
                     + "=" + URLEncoder.encode(androidVersion, "UTF-8");
 
             // Defined URL  where to send data
-            URL url = new URL("http://androidexample.com/media/webservice/httppost.php");
+            URL url = new URL("youraddresshere");
 
             // Send POST data request
 
