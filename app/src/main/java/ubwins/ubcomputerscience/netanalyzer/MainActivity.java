@@ -1,8 +1,13 @@
+//APP NAME
 //netanalyzer v1.0
 
 //CONTRIBUTORS
 //agautam2@buffalo.edu, armaango@buffalo.edu
 //UBWiNS@ Computer Science @ State University of New York at Buffalo
+
+//DESCRIPTION
+//An Android application that lets you monitor interesting cellular network
+//statistics on your Android enabled phone
 
 package ubwins.ubcomputerscience.netanalyzer;
 
