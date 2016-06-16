@@ -1,3 +1,4 @@
 # NetAnalyzer
 
-An Android app that lets you monitor and study your cellular network statistics
+An Android application that lets you monitor interesting cellular network statistics on your Android phone.
+A part of on-going research at UB in Crowdsourced Cellular Network Performance Study Using Smartphones.
