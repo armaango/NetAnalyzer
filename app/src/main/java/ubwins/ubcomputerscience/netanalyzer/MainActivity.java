@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     Location location;
 
     //Exports SQLiteDB to CSV file in Phone Storage
-    public void exportDatabase()
+    public void exportToCSV()
     {
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state))
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
                 Log.v(TAG, "Directory made");
             }
 
-            File file = new File(exportDir, "GeoData.csv") ;
+            File file = new File(exportDir, "CellularData.csv") ;
             PrintWriter printWriter = null;
             try
             {
@@ -78,8 +78,8 @@ public class MainActivity extends AppCompatActivity
                 printWriter = new PrintWriter(new FileWriter(file));
                 DBHandler dbHandler = new DBHandler(getApplicationContext());
                 SQLiteDatabase sqLiteDatabase = dbHandler.getReadableDatabase();
-                Cursor curCSV = sqLiteDatabase.rawQuery("select * from footRecords", null);
-                printWriter.println("Latitude,Longitude,locality,city,state,country,NETWORK_PROVIDER");
+                Cursor curCSV = sqLiteDatabase.rawQuery("select * from cellRecords", null);
+                printWriter.println("Latitude,Longitude,locality,city,state,country,NETWORK_PROVIDER,TIMESTAMP,NETWORK_TYPE,NETWORK_STATE,NETWORK_RSSI");
                 while(curCSV.moveToNext())
                 {
                     Double latitude = curCSV.getDouble(curCSV.getColumnIndex("LAT"));
@@ -90,7 +90,12 @@ public class MainActivity extends AppCompatActivity
                     String stateName = curCSV.getString(curCSV.getColumnIndex("STATE"));
                     String country = curCSV.getString(curCSV.getColumnIndex("COUNTRY"));
 
-                    String record = latitude + "," + longitude + "," + locality + "," + city + "," + stateName + "," + country + "," + networkProvider;
+                    String timeStamp = curCSV.getString(curCSV.getColumnIndex("TIMESTAMP"));
+                    String networkType = curCSV.getString(curCSV.getColumnIndex("NETWORK_TYPE"));
+                    String networkState = curCSV.getString(curCSV.getColumnIndex("NETWORK_STATE"));
+                    String networkRSSI = curCSV.getString(curCSV.getColumnIndex("NETWORK_RSSI"));
+
+                    String record = latitude + "," + longitude + "," + locality + "," + city + "," + stateName + "," + country + "," + networkProvider + "," + timeStamp + "," + networkType + "," + networkState + "," + networkRSSI;
                     Log.v(TAG, "attempting to write to file");
                     printWriter.println(record);
                     Log.v(TAG, "data written to file");
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity
         File data = Environment.getDataDirectory();
         FileChannel source = null;
         FileChannel destination = null;
-        String currentDBPath = "/data/" + "com.example.gpstracking" + "/databases/" + "mainTuple";
+        String currentDBPath = "/data/" + "ubwins.ubcomputerscience.netanalyzer" + "/databases/" + "mainTuple";
         String backupDBPath = "mainTuple";
         File currentDB = new File(data, currentDBPath);
         File backupDB = new File(sd, backupDBPath);
@@ -190,7 +195,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View arg1)
             {
-                exportDatabase();
+                exportToCSV();
             }
         });
 
@@ -212,20 +217,27 @@ public class MainActivity extends AppCompatActivity
                     gps.showSettingsAlertForceGPS();
                 }
 
+                if(result==true)
+                {
                     location = gps.getLocationByNetwork();
+                    if(location!=null)
+                    {
+                        final TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+                        cdr = new CellularDataRecorder();
+                        Log.v(TAG, "Calling getLocalTimeStamp and getCellularInfo");
+                        String timeStamp = cdr.getLocalTimeStamp();
+                        String cellularInfo = cdr.getCellularInfo(telephonyManager);
 
-
-                final TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-                cdr = new CellularDataRecorder();
-                Log.v(TAG, "Calling getLocalTimeStamp and getCellularInfo");
-                String timeStamp = cdr.getLocalTimeStamp();
-                String cellularInfo = cdr.getCellularInfo(telephonyManager);
-
-                Log.v(TAG, "TIME STAMP: " + timeStamp);
-                Log.v(TAG, "CELLULAR INFO: " + cellularInfo);
-                dbStore = new DBStore(MainActivity.this);
-                dbStore.insertIntoDB(location,timeStamp,cellularInfo);
-
+                        Log.v(TAG, "TIME STAMP: " + timeStamp);
+                        Log.v(TAG, "CELLULAR INFO: " + cellularInfo);
+                        dbStore = new DBStore(MainActivity.this);
+                        dbStore.insertIntoDB(location, timeStamp, cellularInfo);
+                    }
+                    else
+                    {
+                        Log.v(TAG, "Waiting for location locking");
+                    }
+                }
 
 
             }
@@ -261,6 +273,11 @@ public class MainActivity extends AppCompatActivity
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
+
+
+
+
+
 
     public void onRegisterClicked(View view)
     {

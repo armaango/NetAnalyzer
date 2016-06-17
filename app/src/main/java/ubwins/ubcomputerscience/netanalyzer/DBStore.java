@@ -19,6 +19,7 @@ public class DBStore
     String adminArea;
     String countryCode;
     String throughFare;
+    String networkProvider;
     Double latitude;
     Double longitude;
 
@@ -37,6 +38,8 @@ public class DBStore
                     longitude=location.getLongitude();
 
                     gps = new GPSTracker(mContext);
+                    gps.addressResolver(location);
+                    networkProvider=gps.getNetworkProvider();
                     locality=gps.getLocality();
                     adminArea=gps.getAdminArea();
                     countryCode=gps.getCountryCode();
@@ -55,7 +58,7 @@ public class DBStore
                     Log.v(TAG,"Trying to push to DB");
                     contentValues.put("LAT",latitude);
                     contentValues.put("LONG",longitude);
-                    contentValues.put("NETWORK_PROVIDER", "NETWORK");
+                    contentValues.put("NETWORK_PROVIDER", networkProvider);
                     contentValues.put("LOCALITY",throughFare);
                     contentValues.put("CITY",locality);
                     contentValues.put("STATE",adminArea);

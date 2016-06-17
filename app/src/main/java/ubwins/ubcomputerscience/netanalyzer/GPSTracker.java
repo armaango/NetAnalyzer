@@ -26,9 +26,12 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 import java.io.IOException;
@@ -53,6 +56,7 @@ public class GPSTracker extends Service implements LocationListener
     String adminArea;
     String countryCode;
     String throughFare;
+    String networkProvider="";
 
     private static final long distance = 10;
     private static final long updateInterval = 30000;
@@ -81,17 +85,19 @@ public class GPSTracker extends Service implements LocationListener
             Log.v(TAG, "trying to get location from Wi-Fi or Cellular Towers");
             geocoder = new Geocoder(mContext);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, updateInterval, distance, this);
-            Log.v(TAG, "NETWORK BASED");
+
             if(locationManager==null)
             {
                 Log.v(TAG, "location manager returned null");
-                location=getLocationByGPS();
             }
             else if (locationManager != null)
             {
+                Log.v(TAG,"location manager for network not null");
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 if (location != null)
                 {
+                    Log.v(TAG, "NETWORK BASED");
+                    networkProvider="NETWORK";
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
                     Log.v(TAG, "LAT: " + Double.toString(latitude));
@@ -131,6 +137,11 @@ public class GPSTracker extends Service implements LocationListener
                     }
 
                 }
+                else
+                {
+                    Log.v(TAG,"failing over to GPS");
+                    location=getLocationByGPS();
+                }
             }
         }
         catch(SecurityException e)
@@ -149,8 +160,10 @@ public class GPSTracker extends Service implements LocationListener
             {
                 Log.v(TAG, "GPS BASED 1");
                 location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if (location != null) {
+                if (location != null)
+                {
                     Log.v(TAG, "GPS BASED 2");
+                    networkProvider="GPS";
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
                     Log.v(TAG, "LAT: " + Double.toString(latitude));
@@ -200,6 +213,43 @@ public class GPSTracker extends Service implements LocationListener
         }
         return location;
     }
+
+    public void addressResolver(Location location)
+    {
+
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        geocoder = new Geocoder(mContext);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        try {
+            if (isConnected)
+            {
+                Log.v(TAG, "Attempting to resolve address");
+                List<Address> locationList = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                if (locationList.get(0).getLocality() != null) {
+                    locality = locationList.get(0).getLocality();
+                    Log.v("[LOCALITY]", locality);
+                }
+                if (locationList.get(0).getAdminArea() != null) {
+                    adminArea = locationList.get(0).getAdminArea();
+                    Log.v("[ADMIN AREA]", adminArea);
+                }
+                if (locationList.get(0).getCountryName() != null) {
+                    countryCode = locationList.get(0).getCountryName();
+                    Log.v("[COUNTRY]", countryCode);
+                }
+                if (locationList.get(0).getThoroughfare() != null) {
+                    throughFare = locationList.get(0).getThoroughfare();
+                    Log.v("[THROUGH FARE]", throughFare);
+                }
+            }
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public Location getLocationParameters()
     {
@@ -262,20 +312,13 @@ public class GPSTracker extends Service implements LocationListener
         Log.v(TAG, "after context");
         alertDialog.setTitle("GPS disabled");
         alertDialog.setMessage("This application requires GPS to be turned on");
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener()
+        alertDialog.setNeutralButton("Settings", new DialogInterface.OnClickListener()
         {
             public void onClick(DialogInterface dialog, int which)
             {
                 Log.v(TAG,"intent started");
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(intent);
-            }
-        });
-        alertDialog.setNegativeButton("No. Use Network", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int which)
-            {
-                Log.v(TAG, "Negative Button");
             }
         });
         alertDialog.show();
@@ -298,6 +341,11 @@ public class GPSTracker extends Service implements LocationListener
     {
         return throughFare;
     }
+    public String getNetworkProvider()
+    {
+        return networkProvider;
+    }
+
 
 
     @Override
