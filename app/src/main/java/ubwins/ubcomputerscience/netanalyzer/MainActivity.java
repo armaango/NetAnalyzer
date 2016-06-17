@@ -201,33 +201,19 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View arg0)
             {
-                gps = new GPSTracker(MainActivity.this);
-                if(!gps.canGetLocation)
+                Log.v(TAG, "inside onClick");
+                String abc = "abc";
+                gps = new GPSTracker(MainActivity.this,abc);
+                boolean result = gps.canGetLocation();
+                Log.v(TAG, "GPS ENABLED= " + result);
+
+                if(result==false)
                 {
                     gps.showSettingsAlertForceGPS();
                 }
-                else
-                {
-                   location = gps.getLocationByNetwork();
-                }
-//                if(gps.canGetLocation())
-//                {
-//                    double latitude = gps.getLatitude();
-//                    double longitude = gps.getLongitude();
-//                    String countryCode = gps.getCountryCode();
-//                    String adminArea = gps.getAdminArea();
-//                    String locality = gps.getLocality();
-//                    String throughFare = gps.getThroughFare();
-//
-//                    // \n is for new line
-//                    Toast.makeText(getApplicationContext(), "You are at - " + throughFare + ", " + locality + ", " + adminArea + ", " + countryCode + "\n" +
-//                            "Latitude: " + latitude + "\nLongitude: " + longitude,  Toast.LENGTH_LONG).show();
-//                }
-//                else
-//                {
-//
-//
-//                }
+
+                    location = gps.getLocationByNetwork();
+
 
                 final TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
                 cdr = new CellularDataRecorder();

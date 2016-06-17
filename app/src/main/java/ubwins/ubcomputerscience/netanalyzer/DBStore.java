@@ -1,5 +1,6 @@
 package ubwins.ubcomputerscience.netanalyzer;
 
+import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,17 +36,23 @@ public class DBStore
                     latitude=location.getLatitude();
                     longitude=location.getLongitude();
 
+                    gps = new GPSTracker(mContext);
                     locality=gps.getLocality();
                     adminArea=gps.getAdminArea();
                     countryCode=gps.getCountryCode();
                     throughFare=gps.getThroughFare();
 
-                    String[] splitter = cellularInfo.split("/*");
+                    Log.v(TAG, "before split: " + cellularInfo);
+                    String[] splitter = cellularInfo.split("@");
+                    Log.v(TAG, "splitter of zero: "+splitter[0]);
+                    Log.v(TAG, "splitter of one: "+splitter[1]);
                     String networkType = splitter[0];
                     String splitter1[] = splitter[1].split("_");
                     String networkState = splitter1[0];
+                    Log.v(TAG,"splitter1 of zero: " + splitter1[0]);
                     String networkRSSI = splitter1[1];
 
+                    Log.v(TAG,"Trying to push to DB");
                     contentValues.put("LAT",latitude);
                     contentValues.put("LONG",longitude);
                     contentValues.put("NETWORK_PROVIDER", "NETWORK");
@@ -60,5 +67,6 @@ public class DBStore
 
                     sqLiteDatabase.insert("cellRecords", null, contentValues);
                     sqLiteDatabase.close();
+                    Log.v(TAG,"Push to DB Successful");
     }
 }

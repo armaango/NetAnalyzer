@@ -63,6 +63,13 @@ public class GPSTracker extends Service implements LocationListener
     public GPSTracker(Context context)
     {
         this.mContext = context;
+        Log.v(TAG,"default constructor");
+    }
+
+
+    public GPSTracker(Context context, String string)
+    {
+        this.mContext = context;
         Log.v(TAG, "calling getLocation function");
         getLocationParameters();
     }
@@ -122,20 +129,7 @@ public class GPSTracker extends Service implements LocationListener
                     {
                         e.printStackTrace();
                     }
-//
-//
-//                    ContentValues contentValues = new ContentValues();
-//                    DBHandler dbHandler = new DBHandler(mContext);
-//                    SQLiteDatabase sqLiteDatabase = dbHandler.getWritableDatabase();
-//                    contentValues.put("LAT",latitude);
-//                    contentValues.put("LONG",longitude);
-//                    contentValues.put("NETWORK_PROVIDER", "NETWORK");
-//                    contentValues.put("LOCALITY",throughFare);
-//                    contentValues.put("CITY",locality);
-//                    contentValues.put("STATE",adminArea);
-//                    contentValues.put("COUNTRY",countryCode);
-//                    sqLiteDatabase.insert("cellRecords", null, contentValues);
-//                    sqLiteDatabase.close();
+
                 }
             }
         }
@@ -188,18 +182,6 @@ public class GPSTracker extends Service implements LocationListener
                         e.printStackTrace();
                     }
 
-//                    ContentValues contentValues = new ContentValues();
-//                    DBHandler dbHandler = new DBHandler(mContext);
-//                    SQLiteDatabase sqLiteDatabase = dbHandler.getWritableDatabase();
-//                    contentValues.put("LAT", latitude);
-//                    contentValues.put("LONG", longitude);
-//                    contentValues.put("NETWORK_PROVIDER", "GPS");
-//                    contentValues.put("LOCALITY", throughFare);
-//                    contentValues.put("CITY", locality);
-//                    contentValues.put("STATE", adminArea);
-//                    contentValues.put("COUNTRY", countryCode);
-//                    sqLiteDatabase.insert("cellRecords", null, contentValues);
-//                    sqLiteDatabase.close();
 
                 }
                 if (location == null) {
@@ -242,6 +224,10 @@ public class GPSTracker extends Service implements LocationListener
                 this.canGetLocation = true;
                 Log.v(TAG, "GPS Based Location Services are ENABLED");
             }
+            else
+            {
+                Log.v(TAG,"GPS NOT ENABLED");
+            }
         }
         catch (Exception e)
         {
@@ -268,50 +254,31 @@ public class GPSTracker extends Service implements LocationListener
         return this.canGetLocation;
     }
 
-    public void showSettingsAlert()
-    {
-        Location location;
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-        alertDialog.setTitle("GPS disabled");
-        alertDialog.setMessage("Do you want to enable it now in settings?");
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int which)
-            {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                mContext.startActivity(intent);
-            }
-        });
-
-        alertDialog.setNegativeButton("No. Use Network", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int which)
-            {
-                getLocationByNetwork();
-                Toast.makeText(mContext, "You are at - " + throughFare + ", " + locality + ", " + adminArea + ", " + countryCode + "\n" +
-                        "Latitude: " + latitude + "\nLongitude: " + longitude,  Toast.LENGTH_LONG).show();
-                // Toast.makeText(mContext, "You are at - \nLatitude: " + latitude + "\nLongitude: " + longitude +"\n" + throughFare+ ", " + locality + ", " + adminArea + ", " + countryCode,  Toast.LENGTH_LONG).show();
-                //Toast.makeText(mContext, "You are at - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-
-            }
-        });
-
-        alertDialog.show();
-    }
 
     public void showSettingsAlertForceGPS()
     {
+        Log.v(TAG, "FORCEGPS settings dialog");
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+        Log.v(TAG, "after context");
         alertDialog.setTitle("GPS disabled");
         alertDialog.setMessage("This application requires GPS to be turned on");
         alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener()
         {
             public void onClick(DialogInterface dialog, int which)
             {
+                Log.v(TAG,"intent started");
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(intent);
             }
         });
+        alertDialog.setNegativeButton("No. Use Network", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int which)
+            {
+                Log.v(TAG, "Negative Button");
+            }
+        });
+        alertDialog.show();
     }
 
 
